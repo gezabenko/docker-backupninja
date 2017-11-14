@@ -13,14 +13,15 @@ RUN apt-get -qq -y autoremove && apt-get -qq -y autoclean && apt-get -qq -y clea
 
 RUN echo -en "###########################\n###    Copy files...    ###\n###########################\n"
 
-COPY etc /etc
 COPY backupninja /usr/share/backupninja
 
-RUN echo -en "###########################\n###  Link ssh files...  ###\n###########################\n"
+RUN echo -en "###########################\n###   Link folders...   ###\n###########################\n"
 
-RUN ln -sf /etc/.ssh /root/.ssh
+RUN [ -d /config/.ssh ] && ln -sf /config/.ssh /root/.ssh
+RUN [ -d /config/backup.d ] && ln -sf /config/backup.d /etc/backup.d
 
-VOLUME [ "/backup" ]
+VOLUME [ "/config"]
+VOLUME [ "/data" ]
 
-CMD [ "backupninja -n" ]
+CMD [ "backupninja -n -f /config/backupninja.conf" ]
 

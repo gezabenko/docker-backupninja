@@ -3,10 +3,11 @@
 Simple backupninja container image with patched and static rsync module.
 
 - copy:
-    - etc/ -> Config folder (/etc/backupninja.conf; /etc/backup.d).
-    - backupninja/ -> backupninja execute folder (/usr/share/backupninja).
+    - `backupninja/`: This is the backupninja execute folder. Place of the your custom or overwrited module. (`/usr/share/backupninja`)
 - volume:
-    - /backup -> Backup directory (/var/backups/servers).
+    - `/config`: Config directory (`backupninja.conf` and `backup.d` folders).
+    - `/backup`: Backup target directory (example: `/var/backups/servers` on host).
 - link:
-    - etc/.ssh/ -> root ssh client folder (/root/.ssh).
+    - `/config/.ssh/`: If this exists, then automatic link to the root ssh client folder (`/root/.ssh`).
+    - `/config/backup.d/`: If this exists (recommended :) ), then automatic link to the default backupninja module's config directory (`/etc/backup.d`).
 
