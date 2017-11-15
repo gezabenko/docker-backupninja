@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN echo -en "###########################\n### Install packages... ###\n###########################\n"
 
 RUN apt-get update && apt-get -qq -y upgrade
-RUN apt-get -qq -y install wget backupninja rsync patch openssh-client mysql-client
+RUN apt-get -qq -y --no-install-recommends install backupninja rsync openssh-client
 
 RUN echo "###########################\n###    Clear env...     ###\n###########################\n"
 
@@ -17,8 +17,8 @@ COPY backupninja /usr/share/backupninja
 
 RUN echo "###########################\n###   Link folders...   ###\n###########################\n"
 
-RUN [ -d /config/.ssh ] && ln -sf /config/.ssh /root/.ssh
-RUN [ -d /config/backup.d ] && ln -sf /config/backup.d /etc/backup.d
+RUN if [ -d /config/.ssh ]; then ln -sf /config/.ssh /root/.ssh; fi
+RUN if [ -d /config/backup.d ]; then ln -sf /config/backup.d /etc/backup.d; fi
 
 VOLUME [ "/config"]
 VOLUME [ "/data" ]
