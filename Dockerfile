@@ -17,11 +17,8 @@ ADD backupninja /usr/share/backupninja
 
 RUN echo "###########################\n###   Link folders...   ###\n###########################\n"
 
-ADD backupninja.conf /etc/backupninja.conf
-ADD backup.d /etc/backup.d
-ADD .ssh /etc/.ssh
-
+VOLUME ["/config"]
 VOLUME ["/backup"]
 
-CMD ["/usr/sbin/backupninja","-n"]
+CMD ["/usr/sbin/backupninja","-n","/config/backupninja.conf"]
 
