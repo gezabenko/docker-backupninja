@@ -17,10 +17,8 @@ COPY backupninja /usr/share/backupninja
 
 RUN echo "###########################\n###   Link folders...   ###\n###########################\n"
 
-RUN if [ -d /config/.ssh ]; then ln -sf /config/.ssh /root/.ssh; fi
-RUN if [ -d /config/backup.d ]; then ln -sf /config/backup.d /etc/backup.d; fi
-
-VOLUME [ "/config","/backup" ]
+VOLUME ["/config"]
+VOLUME ["/backup"]
 
 CMD [ "/usr/sbin/backupninja","-n","-f","/config/backupninja.conf" ]
 
