@@ -20,5 +20,5 @@ RUN echo "###########################\n###   Link folders...   ###\n############
 VOLUME ["/config"]
 VOLUME ["/backup"]
 
-CMD ["/usr/sbin/backupninja","-n","/config/backupninja.conf"]
+CMD ["/usr/sbin/backupninja","-n","-f","/config/backupninja.conf"]
 
