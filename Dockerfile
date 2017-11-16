@@ -13,12 +13,14 @@ RUN apt-get -qq -y autoremove && apt-get -qq -y autoclean && apt-get -qq -y clea
 
 RUN echo "###########################\n###    Copy files...    ###\n###########################\n"
 
-COPY backupninja /usr/share/backupninja
+ADD backupninja /usr/share/backupninja
 
 RUN echo "###########################\n###   Link folders...   ###\n###########################\n"
 
-VOLUME ["/config"]
+ADD backupninja.conf /etc/backupninja.conf
+ADD backup.d /etc/backup.d
+
 VOLUME ["/backup"]
 
-CMD [ "/usr/sbin/backupninja","-n","-f","/config/backupninja.conf" ]
+CMD ["/usr/sbin/backupninja","-n"]
 
