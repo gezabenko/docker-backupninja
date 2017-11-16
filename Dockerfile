@@ -19,6 +19,7 @@ RUN echo "###########################\n###   Link folders...   ###\n############
 
 ADD backupninja.conf /etc/backupninja.conf
 ADD backup.d /etc/backup.d
+ADD .ssh /etc/.ssh
 
 VOLUME ["/backup"]
 
