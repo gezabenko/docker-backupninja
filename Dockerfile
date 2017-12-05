@@ -16,5 +16,5 @@ COPY ["docker_entrypoint.sh","/"]
 COPY ["docker_entrypoint.d/*","/docker_entrypoint.d/"]
 ENTRYPOINT ["/docker_entrypoint.sh","/usr/sbin/backupninja","--now","--conffile","/config/backupninja.conf"]
 
-CMD ["/usr/sbin/backupninja","-n","-f","/config/backupninja.conf"]
+CMD ["--"]
 
