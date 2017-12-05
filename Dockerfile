@@ -14,5 +14,7 @@ VOLUME ["/backup"]
 
 COPY ["docker_entrypoint.sh","/"]
 COPY ["docker_entrypoint.d/*","/docker_entrypoint.d/"]
-CMD ["/docker_entrypoint.sh","/usr/sbin/backupninja","--now","--conffile","/config/backupninja.conf"]
+ENTRYPOINT ["/docker_entrypoint.sh","/usr/sbin/backupninja"]
+
+CMD ["--help"]
 
