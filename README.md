@@ -15,3 +15,6 @@ Simple backupninja container image with patched and static rsync module.
 
 ## todo:
 
+## build and push image
+
+docker build --no-cache -t backupninja . && docker image tag backupninja:latest gbenko/backupninja:latest && docker image push gbenko/backupninja:latest

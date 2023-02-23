@@ -21,6 +21,7 @@ RUN mv /etc/apt/apt.conf.d/70debconf . \
 RUN ${APT} install --no-install-recommends \
     tzdata \
     backupninja \
+    ca-certificates \
     msmtp \
     rsync \
     openssh-client
@@ -31,6 +32,11 @@ RUN ${APT} autoremove \
     && rm -rf /var/lib/apt/lists/*
 
 ENV TZ="Europe/Budapest"
+
+RUN ln -sf /usr/bin/msmtp /usr/bin/sendmail \
+    && ln -sf /usr/bin/msmtp /usr/sbin/sendmail
+
+RUN sed -i '1 i\set mta=/usr/bin/msmtp' /etc/mail.rc
 
 RUN mkdir /backup
 
