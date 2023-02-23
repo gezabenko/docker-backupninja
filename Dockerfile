@@ -1,20 +1,44 @@
-FROM ubuntu
+ARG IMAGE="alpine:3.17"
+FROM ${IMAGE}
 
-ENV DEBIAN_FRONTEND noninteractive
+RUN apk update && apk upgrade && \
+    apk add --no-cache autoconf \
+                       automake \
+                       bash \
+                       borgbackup \
+                       cryptsetup \
+                       duplicity \
+                       flashrom \
+                       gawk \
+                       gzip \
+                       hwinfo \
+                       make \
+                       msmtp \
+                       openssh-client \
+                       rdiff-backup \
+                       restic \
+                       rsync \
+                       tar \
+                       tzdata
 
-RUN apt-get update && apt-get -qq -y upgrade
-RUN apt-get -qq -y --no-install-recommends install backupninja rsync openssh-client
+ENV TZ=Europe/Budapest
 
-RUN apt-get -qq -y autoremove && apt-get -qq -y autoclean && apt-get -qq -y clean && rm -rf /var/lib/apt/lists/*
+RUN mkdir /usr/local/src
 
-ADD backupninja /usr/share/backupninja
+RUN wget -q "https://0xacab.org/liberate/backupninja/-/archive/backupninja-1.2.2/backupninja-backupninja-1.2.2.tar.gz" -O /usr/local/src/backupninja.tgz
 
-VOLUME ["/config"]
+RUN tar -xzf /usr/local/src/backupninja.tgz -C /usr/local/src/
+
+WORKDIR "/usr/local/src/backupninja-backupninja-1.2.2/"
+
+RUN ./autogen.sh
+RUN ./configure
+RUN make
+RUN make install
+
+RUN mkdir /backup
+
 VOLUME ["/backup"]
 
-COPY ["docker_entrypoint.sh","/"]
-COPY ["docker_entrypoint.d/*","/docker_entrypoint.d/"]
-ENTRYPOINT ["/docker_entrypoint.sh","/usr/sbin/backupninja"]
-
+ENTRYPOINT ["/usr/local/sbin/backupninja"]
 CMD ["--help"]
-

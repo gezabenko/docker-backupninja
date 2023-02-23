@@ -1,24 +1,43 @@
-# docker-backupninja
+# docker-alpine-backupninja
 
-Simple backupninja container image with patched and static rsync module.
+Alpine base docker image to use backupninja.
 
-- copy:
-    - `backupninja/`: This is the backupninja execute folder. Place of the your custom or overwrited module. (`/usr/share/backupninja`)
-- volume:
-    - `/config`: Config directory (`backupninja.conf` and `backup.d` folders).
-    - `/backup`: Backup target directory (example: `/var/backups/servers` on host).
-- link:
-    - `/config/.ssh/`: If this exists, then automatic link to the root ssh client folder (`/root/.ssh`).
-    - `/config/backup.d/`: If this exists (recommended :) ), then automatic link to the default backupninja module's config directory (`/etc/backup.d`).
-
-## example
+## Quick start
 
 ```bash
-   docker run -d --rm \
-      -e PUID=0 \
-      -e PGID=0 \
-      -e TZ=Europe/Paris \
-      -v /home/etc/backupninja/:/config \
-      -v /var/backups/:/backup \
-      gbenko/backupninja
+docker run --rm --name backupninja \
+  -e TZ=Europe/Budapest \
+  -v $(PWD)/config/backupninja.conf:/usr/local/etc/backupninja.conf:ro \
+  -v $(PWD)/config/backup.d:/usr/local/etc/backup.d:ro \
+  -v $(PWD)/config/ssh:/root/.ssh:ro \
+  -v /var/backups:/backup \
+  gbenko/backupninja --now
 ```
+
+## docker-compose
+
+```yaml
+---
+version: "3.8"
+
+services:
+  backupninja:
+    image: gbenko/backupninja-alpine:latest
+    environment:
+      # Add timezone
+      - TZ=Europe/Budapest
+    volumes:
+      # The main backupninja file:
+      - ./config/backupninja.conf:/usr/local/etc/backupninja.conf:ro
+      # The backupninja jobs folder:
+      - ./config/backup.d:/usr/local/etc/backup.d:ro
+      # The root ssh folder:
+      - ./config/ssh:/root/.ssh:ro
+      # (Optional) The msmtprc file:
+      - ./config/msmtprc:/etc/msmtprc:ro
+      # Location of backups:
+      - /var/backups:/backup
+      # (Optional) Location of log file:
+      - ./log/backupninja.log:/usr/local/var/log/backupninja.log
+```
+
