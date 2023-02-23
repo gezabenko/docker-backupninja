@@ -1,19 +1,41 @@
-FROM ubuntu
+ARG IMAGE="ubuntu:18.04"
+FROM ${IMAGE}
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND="noninteractive"
+ARG DEBCONF_NOWARNINGS="yes"
+ARG DEBCONF_TERSE="yes"
+ARG APT="apt-get -qq -y"
 
-RUN apt-get update && apt-get -qq -y upgrade
-RUN apt-get -qq -y --no-install-recommends install backupninja rsync openssh-client
+RUN echo "debconf debconf/frontend select ${DEBIAN_FRONTEND}" | debconf-set-selections >/dev/null \
+    && echo 'APT::Install-Recommends "false";' | tee /etc/apt/apt.conf.d/99install-recommends \
+    && echo 'APT::Get::Assume-Yes "true";' | tee /etc/apt/apt.conf.d/99assume-yes \
+    && sed -Ei 's|^(DPkg::Pre-Install-Pkgs .*)|#\1|g' /etc/apt/apt.conf.d/70debconf \
+    && debconf-show debconf
 
-RUN apt-get -qq -y autoremove && apt-get -qq -y autoclean && apt-get -qq -y clean && rm -rf /var/lib/apt/lists/*
+RUN mv /etc/apt/apt.conf.d/70debconf . \
+    && ${APT} update \
+    && ${APT} install apt-utils >/dev/null \
+    && mv 70debconf /etc/apt/apt.conf.d \
+    && ${APT} upgrade >/dev/null
 
-ADD backupninja /usr/share/backupninja
+RUN ${APT} install --no-install-recommends \
+    tzdata \
+    backupninja \
+    msmtp \
+    rsync \
+    openssh-client
 
-VOLUME ["/config"]
+RUN ${APT} autoremove \
+    && ${APT} autoclean \
+    && ${APT} clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV TZ="Europe/Budapest"
+
+RUN mkdir /backup
+
 VOLUME ["/backup"]
 
-COPY ["docker_entrypoint.sh","/"]
-COPY ["docker_entrypoint.d/*","/docker_entrypoint.d/"]
-ENTRYPOINT ["/docker_entrypoint.sh","/usr/sbin/backupninja"]
+ENTRYPOINT ["/usr/sbin/backupninja"]
 CMD ["--help"]
 
